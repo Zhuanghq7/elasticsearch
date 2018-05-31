@@ -1,9 +1,7 @@
 [[cluster-health]]
-== Cluster Health
+== 集群健康
 
-The cluster health API allows to get a very simple status on the health
-of the cluster. For example, on a quiet single node cluster with a single index
-with 5 shards and one replica, this:
+集群健康API允许用户获得集群健康状况的简单状态。例如，在一个单索引、五个分片和一个副本的单节点集群中调用如下API：
 
 [source,js]
 --------------------------------------------------
@@ -12,7 +10,7 @@ GET _cluster/health
 // CONSOLE
 // TEST[s/^/PUT test1\n/]
 
-Returns this:
+将会返回:
 
 [source,js]
 --------------------------------------------------
