@@ -37,8 +37,7 @@ GET _cluster/health
 // TESTRESPONSE[s/"task_max_waiting_in_queue_millis": 0/"task_max_waiting_in_queue_millis": $body.task_max_waiting_in_queue_millis/]
 
 
-The API can also be executed against one or more indices to get just the
-specified indices health:
+该API还能指定针对一个或者多个索引执行，并获取给定索引的健康状况：
 
 [source,js]
 --------------------------------------------------
@@ -47,18 +46,9 @@ GET /_cluster/health/test1,test2
 // CONSOLE
 // TEST[s/^/PUT test1\nPUT test2\n/]
 
-The cluster health status is: `green`, `yellow` or `red`. On the shard
-level, a `red` status indicates that the specific shard is not allocated
-in the cluster, `yellow` means that the primary shard is allocated but
-replicas are not, and `green` means that all shards are allocated. The
-index level status is controlled by the worst shard status. The cluster
-status is controlled by the worst index status.
+集群的健康状况可分为： `green`, `yellow` 或者 `red`。在分片层面, `red` 状态代表特定分片未在集群中分配， `yellow` 状态代表主分片已经在集群中分配空间而副本还没有， `green` 状态表示所有的分片都已完成空间分配。索引的等级状态由其下状态最糟糕的分片状态决定。集群的状态由其下状态最糟糕的索引状态决定。
 
-One of the main benefits of the API is the ability to wait until the
-cluster reaches a certain high water-mark health level. For example, the
-following will wait for 50 seconds for the cluster to reach the `yellow`
-level (if it reaches the `green` or `yellow` status before 50 seconds elapse,
-it will return at that point):
+集群健康API的一个主要优点是该API有能力等待直到集群状态达到一个明确的高水准健康等级。例如，，下面的命令将会等待50秒直到集群状态等级来到 `yellow` （如果集群在50秒钟之内到达 `green` 或者 `yellow` 状态，集群健康API会即刻返回）：
 
 [source,js]
 --------------------------------------------------
@@ -68,51 +58,37 @@ GET /_cluster/health?wait_for_status=yellow&timeout=50s
 
 [float]
 [[request-params]]
-=== Request Parameters
+=== 请求参数
 
-The cluster health API accepts the following request parameters:
+集群健康API接受以下几种请求参数：
 
 `level`::
-    Can be one of `cluster`, `indices` or `shards`. Controls the
-    details level of the health information returned. Defaults to `cluster`.
+    可选 `cluster`，`indices` 或者 `shards`。 控制API返回的健康信息的详细等级。默认值为 `cluster`。
 
 `wait_for_status`::
-    One of `green`, `yellow` or `red`. Will wait (until
-    the timeout provided) until the status of the cluster changes to the one
-    provided or better, i.e. `green` > `yellow` > `red`. By default, will not
-    wait for any status.
+    可选 `green`，`yellow` 或者 `red`。将会等待（直到设定的timeout时间）直到集群状态转移到给定状态或更佳，其中 `green` 状态 > `yellow` 状态 > `red` 状态。默认情况下，不会等待任何状态。
 
 `wait_for_no_relocating_shards`::
-    A boolean value which controls whether to wait (until the timeout provided)
-    for the cluster to have no shard relocations. Defaults to false, which means
-    it will not wait for relocating shards.
+    一个布尔值，控制请求是否等待（直到设定的timeout时间）集群到没有分片重定位。默认值为 false，代表不会等待正在重定位的分片重定位结束。
 
 `wait_for_no_initializing_shards`::
-    A boolean value which controls whether to wait (until the timeout provided)
-    for the cluster to have no shard initializations. Defaults to false, which means
-    it will not wait for initializing shards.
+    一个布尔值，控制是否等待（直到设定的timeout值）集群到没有分片初始化。默认值为 false，代表不会等待正在初始化的分片初始化结束。
 
 `wait_for_active_shards`::
-    A number controlling to how many active shards to wait for, `all` to wait
-    for all shards in the cluster to be active, or `0` to not wait. Defaults to `0`.
+    一个数字，控制请求等待多少活动分片， `all` 代表等待集群中的所有分片到达活动状态，或 `0` 表示不等待。默认为 `0`。
 
 `wait_for_nodes`::
-    The request waits until the specified number `N` of
-    nodes is available. It also accepts `>=N`, `<=N`, `>N` and `<N`.
-    Alternatively, it is possible to use `ge(N)`, `le(N)`, `gt(N)` and
-    `lt(N)` notation.
+    请求将会等待给定数量 `N` 个节点直到他们可用。该请求参数也接受 `>=N`，`<=N`,`>N` 和 `<N`。相对应的，该参数还可以使用 `ge(N)`，`le(N)`，`gt(N)` 和
+    `lt(N)` 记号。
 
 `timeout`::
-    A time based parameter controlling how long to wait if one of
-    the wait_for_XXX are provided. Defaults to `30s`.
+    一个基于时间的参数，该参数控制上文提到的各个 wait_for_XXX 类型参数所用到的timeout时间。默认是为 `30s`。
 
 `local`::
-    If `true` returns the local node information and does not provide
-    the state from master node. Default: `false`.
+    布尔值，如果为 `true` 则返回本地节点信息而不是返回集群主节点信息。默认值为 `false`。
 
 
-The following is an example of getting the cluster health at the
-`shards` level:
+下面是一个获取集群 `shards` 层面健康状况的例子：
 
 [source,js]
 --------------------------------------------------
