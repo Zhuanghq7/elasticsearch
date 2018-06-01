@@ -1,8 +1,7 @@
 [[cluster-state]]
-== Cluster State
+== 集群状态
 
-The cluster state API allows to get a comprehensive state information of
-the whole cluster.
+集群状态API允许用户获取整个集群的综合状态信息。
 
 [source,js]
 --------------------------------------------------
@@ -10,21 +9,14 @@ GET /_cluster/state
 --------------------------------------------------
 // CONSOLE
 
-The response provides the cluster name, the total compressed size
-of the cluster state (its size when serialized for transmission over
-the network), and the cluster state itself, which can be filtered to
-only retrieve the parts of interest, as described below.
+响应将会返回集群的名称，整个集群状态的压缩大小（集群状态为了在网络上传输进行序列化之后的大小），和集群状态本身。整个返回值可以像下文描述的一样进行过滤，只获取需要的部分。
 
-By default, the cluster state request is routed to the master node, to
-ensure that the latest cluster state is returned.   
-For debugging purposes, you can retrieve the cluster state local to a
-particular node by adding `local=true` to the  query string.
+默认情况下，集群状态API会作用在集群主节点上以保证返回的集群状态是最新的。为了debug，你可以通过在查询字符串中添加 `local=true` 设置从特定的节点获取本地集群状态。
 
 [float]
-=== Response Filters
+=== 响应过滤
 
-As the cluster state can grow (depending on the number of shards and indices, your mapping, templates),
-it is possible to filter the cluster state response specifying the parts in the URL.
+由于集群的状态是可增长的（取决于分片和索引的数量，用户的映射和索引），可以通过设定URL中的特殊部分来过滤集群状态API的响应结果。
 
 [source,js]
 --------------------------------------------------
@@ -32,27 +24,27 @@ GET /_cluster/state/{metrics}/{indices}
 --------------------------------------------------
 // CONSOLE
 
-`metrics` can be a comma-separated list of
+`metrics` 可以是由逗号分隔的以下标签的列表
 
 `version`::
-    Shows the cluster state version.
+    展示集群状态版本。
 
 `master_node`::
-    Shows the elected `master_node` part of the response
+    展示响应中的给定 `master_node` 部分。 
 
 `nodes`::
-    Shows the `nodes` part of the response
+    展示响应中的 `nodes` 部分。
 
 `routing_table`::
-    Shows the `routing_table` part of the response. If you supply a comma separated list of indices, the returned output will only contain the indices listed.
+    展示响应中的 `routing_table` 部分。如果你提供一个逗号分隔的索引的列表，那么返回结果将只包含列表中的索引。
 
 `metadata`::
-    Shows the `metadata` part of the response. If you supply a comma separated list of indices, the returned output will only contain the indices listed.
+    展示响应中的 `metadata` 数据。如果你提供一个逗号分隔的索引列表，那么返回结果将只包含列表中的索引。
 
 `blocks`::
-    Shows the `blocks` part of the response
+    展示响应中的 `blocks` 部分。
 
-The following example returns only `metadata` and `routing_table` data for the `foo` and `bar` indices:
+下面这个例子将会返回只有 `foo` 和 `bar` 索引下的 `metadata` 和 `routing_table` 字段的数据：
 
 [source,js]
 --------------------------------------------------
@@ -60,7 +52,7 @@ GET /_cluster/state/metadata,routing_table/foo,bar
 --------------------------------------------------
 // CONSOLE
 
-The next example returns everything for the `foo` and `bar` indices:
+接下去的例子将返回 `foo` 和 `bar` 索引的所有信息数据：
 
 [source,js]
 --------------------------------------------------
@@ -68,7 +60,7 @@ GET /_cluster/state/_all/foo,bar
 --------------------------------------------------
 // CONSOLE
 
-And this example return only `blocks` data:
+这个例子只返回 `blocks` 数据：
 [source,js]
 --------------------------------------------------
 GET /_cluster/state/blocks
