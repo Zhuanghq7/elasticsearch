@@ -1,14 +1,10 @@
 [[cluster-pending]]
-== Pending cluster tasks
+== 暂挂集群任务
 
-The pending cluster tasks API returns a list of any cluster-level changes
-(e.g. create index, update mapping, allocate or fail shard) which have not yet
-been executed.
+暂挂集群任务API返回一个集群层面上的仍未被执行的改变（例如创建索引、更新映射、分配或销毁分片）的列表。
 
-NOTE: This API returns a list of any pending updates to the cluster state. These are distinct from the tasks reported by the
-<<tasks,Task Management API>> which include periodic tasks and tasks initiated by the user, such as node stats, search queries, or create
-index requests. However, if a user-initiated task such as a create index command causes a cluster state update, the activity of this task
-might be reported by both task api and pending cluster tasks API.
+NOTE: 该API返回一个有关于集群即将进行的更新的列表。该API的返回与任务管理API返回的任务列表有所不同，任务管理API
+<<tasks,Task Management API>> 返回的任务列表包括周期任务和用户创建的任务，例如集群统计任务、查询、或创建索引请求。然而如果一个类如创建索引命令的用户创建任务产生了集群状态的更新，那么该任务的活动也许会同时被任务管理API和暂挂集群任务API返回。
 
 [source,js]
 --------------------------------------------------
@@ -16,9 +12,7 @@ GET /_cluster/pending_tasks
 --------------------------------------------------
 // CONSOLE
 
-Usually this will return an empty list as cluster-level changes are usually
-fast. However if there are tasks queued up, the output will look something
-like this:
+一般情况下，由于集群层次的改变都非常快，该命令会返回一个空的集合。然而，当集群层面的任务变多且产生任务队列，返回将和下文给出的相类似：
 
 [source,js]
 --------------------------------------------------
