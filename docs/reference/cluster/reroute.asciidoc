@@ -1,14 +1,9 @@
 [[cluster-reroute]]
-== Cluster Reroute
+== 集群重路由
 
-The reroute command allows to explicitly execute a cluster reroute
-allocation command including specific commands. For example, a shard can
-be moved from one node to another explicitly, an allocation can be
-canceled, or an unassigned shard can be explicitly allocated on a
-specific node.
+重路由命令允许显式执行包含特定命令的集群重新路由分配命令。举例来说，一个分片可以从一个节点显式的移动到另一个节点，一次分配可以被取消，或者一个未分配的分片可以被显式的指定分配到特定节点。
 
-Here is a short example of how a simple reroute API call:
-
+下面是一个简单的调用重路由 API 的小例子：
 [source,js]
 --------------------------------------------------
 POST /_cluster/reroute
@@ -32,91 +27,41 @@ POST /_cluster/reroute
 // CONSOLE
 // TEST[skip:doc tests run with only a single node]
 
-An important aspect to remember is the fact that once when an allocation
-occurs, the cluster will aim at re-balancing its state back to an even
-state. For example, if the allocation includes moving a shard from
-`node1` to `node2`, in an `even` state, then another shard will be moved
-from `node2` to `node1` to even things out.
+要记住的一个重要方面是当一次分配发生时，集群将会致力于将集群状态重新调整到均衡状态。举例来说，如果一次分配包含了将一个分片从 `node1` 转移到 `node2` ，为了达到 `even` 状态，另一个分片将会从 `node2` 移动到 `node1` 使整个系统达到平衡。
 
-The cluster can be set to disable allocations, which means that only the
-explicitly allocations will be performed. Obviously, only once all
-commands has been applied, the cluster will aim to be re-balance its
-state.
+集群可以设置为禁用分配，这表示只有显式的分配将会有效。显然，仅当所有命令被接受，集群才会重新寻求平衡状态。
 
-Another option is to run the commands in `dry_run` (as a URI flag, or in
-the request body). This will cause the commands to apply to the current
-cluster state, and return the resulting cluster after the commands (and
-re-balancing) has been applied.
+另一个选项是在 `dry_run` （作为 URI 的 flag 或在请求体中）状态下运行命令。这将导致命令应用在当前集群状态，且返回命令（和集群重平衡）应用后的结果集群状态。
 
-If the `explain` parameter is specified, a detailed explanation of why the
-commands could or could not be executed is returned.
+如果声明了 `explain` 参数，那么一个有关为什么命令被执行或未被执行的详细解释将会返回。
 
-The commands supported are:
+命令支持:
 
 `move`::
-    Move a started shard from one node to another node. Accepts
-    `index` and `shard` for index name and shard number, `from_node` for the
-    node to move the shard `from`, and `to_node` for the node to move the
-    shard to.
+    将一个已经启动的分片从一个节点移动到另一个节点。接受 `index` 参数和 `shard` 参数，分别代表索引名称和分片序号， `from_node` 参数代表从哪个节点移动分片， `to_node` 代表分片移动到哪个节点去。
 
 `cancel`::
-    Cancel allocation of a shard (or recovery). Accepts `index`
-    and `shard` for index name and shard number, and `node` for the node to
-    cancel the shard allocation on. It also accepts `allow_primary` flag to
-    explicitly specify that it is allowed to cancel allocation for a primary
-    shard.  This can be used to force resynchronization of existing replicas
-    from the primary shard by cancelling them and allowing them to be
-    reinitialized through the standard reallocation process.
+    取消一个分片的分配（或者恢复）。接受 `index` 参数和 `shard` 参数分别代表索引名称和分片序号，还有 `node` 参数代表取消分片在哪个节点上的分配。该参数同时接受 `allow_primary` 标记来显式指定允许取消主要分片的分配。这可以用来强行对主分片的已有副本进行重新同步，通过取消他们的分配然后允许他们通过标准的重新分配程序重新初始化。
 
 `allocate_replica`::
-    Allocate an unassigned replica shard to a node. Accepts the
-    `index` and `shard` for index name and shard number, and `node` to
-    allocate the shard to. Takes <<modules-cluster,allocation deciders>> into account.
+    将一个未分配的副本分片分配到一个节点。接受 `index` 参数和 `shard` 参数分别代表索引名称和分片序号，还有 `node` 参数代表哪个节点分配分片。参考 <<modules-cluster,allocation deciders>> 。
 
-Two more commands are available that allow the allocation of a primary shard
-to a node. These commands should however be used with extreme care, as primary
-shard allocation is usually fully automatically handled by Elasticsearch.
-Reasons why a primary shard cannot be automatically allocated include the following:
+还有两个命令是可用的，他们允许将主分片分配到节点。这些命令在使用时需要额外的小心，因为主分片分配总是被 Elasticsearch 全自动管理的。下面是一些主分片不能被自动分配的原因：
 
-- A new index was created but there is no node which satisfies the allocation deciders.
-- An up-to-date shard copy of the data cannot be found on the current data nodes in
-the cluster. To prevent data loss, the system does not automatically promote a stale
-shard copy to primary.
+- 一个新的索引被创建了，但是没有一个节点满足分配要求。
+- 在集群中的当前数据节点上不能找到数据的最新拷贝分片。为了预防数据丢失，系统不会自动将一个陈旧的分片拷贝提升到主分片级别。
 
-As a manual override, two commands to forcefully allocate primary shards
-are available:
+两个手动重载的方法可以用来强行分配主分片：
 
 `allocate_stale_primary`::
-    Allocate a primary shard to a node that holds a stale copy. Accepts the
-    `index` and `shard` for index name and shard number, and `node` to
-    allocate the shard to. Using this command may lead to data loss
-    for the provided shard id. If a node which has the good copy of the
-    data rejoins the cluster later on, that data will be overwritten with
-    the data of the stale copy that was forcefully allocated with this
-    command. To ensure that these implications are well-understood,
-    this command requires the special field `accept_data_loss` to be
-    explicitly set to `true` for it to work.
+    向一个拥有陈旧拷贝的节点分配主分片。接受 `index` 参数和 `shard` 参数分别代表索引名称和分片序号，还有 `node` 参数代表在哪个节点上分配分片。使用该命令也许会导致给定 id 的分片的数据丢失。如果一个拥有该数据可用拷贝的节点在稍后加入到集群，那么那些数据将会被通过该命令强制分配的陈旧拷贝所重写。为了保证用户完全理解了这个问题，这个命令需要一个特别的参数 `accept_data_loss` 并显式声明为 `true` 来使命令正常工作。
 
 `allocate_empty_primary`::
-    Allocate an empty primary shard to a node. Accepts the
-    `index` and `shard` for index name and shard number, and `node` to
-    allocate the shard to. Using this command leads to a complete loss
-    of all data that was indexed into this shard, if it was previously
-    started. If a node which has a copy of the
-    data rejoins the cluster later on, that data will be deleted!
-    To ensure that these implications are well-understood,
-    this command requires the special field `accept_data_loss` to be
-    explicitly set to `true` for it to work.
+    向一个节点分配一个空的主分片。接受 `index` 参数和 `shard` 参数分别代表索引名称和分片序号，还有 `node` 参数代表在哪个节点上分配分片。使用这个命令将导致索引在该分片（如果该分片先前已经启动）上的所有数据丢失。如果一个拥有该数据可用拷贝的节点在稍后加入到集群，那些数据的可用拷贝将会被删除！为了保证用户完全理解了这个问题，这个命令需要一个特别的参数 `accept_data_loss` 并显式声明为 `true` 来使命令正常工作。
 
 [float]
-=== Retry failed shards
+=== 重试失败的分片
 
-The cluster will attempt to allocate a shard a maximum of
-`index.allocation.max_retries` times in a row (defaults to `5`), before giving
-up and leaving the shard unallocated. This scenario can be caused by
-structural problems such as having an analyzer which refers to a stopwords
-file which doesn't exist on all nodes.
+集群将会在放弃分配一个分片并将其标记为未分片之前连续尝试最大 `index.allocation.max_retries` 次分配一个分片（默认为 `5` ）。这种情况可能是由于结构性问题引起的，例如一个分析器引用了一个在所有节点上都不存在的停用词文件。
 
-Once the problem has been corrected, allocation can be manually retried by
-calling the <<cluster-reroute,`reroute`>> API with `?retry_failed`, which
-will attempt a single retry round for these shards.
+一旦这个问题发生了，可以通过 <<cluster-reroute,`reroute`>> API 的 `?retry_failed` 参数重新手动启动分配过程。该方法会对这些分片进行一次重新尝试分配。

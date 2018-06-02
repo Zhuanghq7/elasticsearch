@@ -6,7 +6,7 @@
 ["float",id="cluster-nodes"]
 == Node specification
 
-大部分集群层面的API允许明确方法在哪些节点上执行(比如说得到某个节点的统计值)。在API调用中可以通过节点id，节点名称，节点地址，节点自定义特性或只是 `_local` 节点来明确接受请求的节点。 例如，下面是一些关于通过不同节点信息设置API执行的例子：
+大部分集群层面的 API 允许明确方法在哪些节点上执行(比如说得到某个节点的统计值)。在 API 调用中可以通过节点 id，节点名称，节点地址，节点自定义特性或只是 `_local` 节点来明确接受请求的节点。 例如，下面是一些关于通过不同节点信息设置 API 执行的例子：
 
 [source,js]
 --------------------------------------------------
@@ -18,7 +18,7 @@ GET /_nodes/10.0.0.*
 # 节点名称
 GET /_nodes/node_name_goes_here
 GET /_nodes/node_name_goes_*
-# 特性 (在config文件中设置例如 node.attr.rack: 2 这样的特性)
+# 特性 (在 config 文件中设置例如 node.attr.rack: 2 这样的特性)
 GET /_nodes/rack:2
 GET /_nodes/ra*:2
 GET /_nodes/ra*:2*

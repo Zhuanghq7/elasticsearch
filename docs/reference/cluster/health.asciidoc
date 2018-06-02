@@ -1,7 +1,7 @@
 [[cluster-health]]
 == 集群健康
 
-集群健康API允许用户获得集群健康状况的简单状态。例如，在一个单索引、五个分片和一个副本的单节点集群中调用如下API：
+集群健康 API 允许用户获得集群健康状况的简单状态。例如，在一个单索引、五个分片和一个副本的单节点集群中调用如下 API：
 
 [source,js]
 --------------------------------------------------
@@ -37,7 +37,7 @@ GET _cluster/health
 // TESTRESPONSE[s/"task_max_waiting_in_queue_millis": 0/"task_max_waiting_in_queue_millis": $body.task_max_waiting_in_queue_millis/]
 
 
-该API还能指定针对一个或者多个索引执行，并获取给定索引的健康状况：
+该 API 还能指定针对一个或者多个索引执行，并获取给定索引的健康状况：
 
 [source,js]
 --------------------------------------------------
@@ -48,7 +48,7 @@ GET /_cluster/health/test1,test2
 
 集群的健康状况可分为： `green`, `yellow` 或者 `red`。在分片层面, `red` 状态代表特定分片未在集群中分配， `yellow` 状态代表主分片已经在集群中分配空间而副本还没有， `green` 状态表示所有的分片都已完成空间分配。索引的等级状态由其下状态最糟糕的分片状态决定。集群的状态由其下状态最糟糕的索引状态决定。
 
-集群健康API的一个主要优点是该API有能力等待直到集群状态达到一个明确的高水准健康等级。例如，，下面的命令将会等待50秒直到集群状态等级来到 `yellow` （如果集群在50秒钟之内到达 `green` 或者 `yellow` 状态，集群健康API会即刻返回）：
+集群健康 API 的一个主要优点是该 API 有能力等待直到集群状态达到一个明确的高水准健康等级。例如，，下面的命令将会等待50秒直到集群状态等级来到 `yellow` （如果集群在50秒钟之内到达 `green` 或者 `yellow` 状态，集群健康 API 会即刻返回）：
 
 [source,js]
 --------------------------------------------------
@@ -60,19 +60,19 @@ GET /_cluster/health?wait_for_status=yellow&timeout=50s
 [[request-params]]
 === 请求参数
 
-集群健康API接受以下几种请求参数：
+集群健康 API 接受以下几种请求参数：
 
 `level`::
-    可选 `cluster`，`indices` 或者 `shards`。 控制API返回的健康信息的详细等级。默认值为 `cluster`。
+    可选 `cluster`，`indices` 或者 `shards`。 控制 API 返回的健康信息的详细等级。默认值为 `cluster`。
 
 `wait_for_status`::
-    可选 `green`，`yellow` 或者 `red`。将会等待（直到设定的timeout时间）直到集群状态转移到给定状态或更佳，其中 `green` 状态 > `yellow` 状态 > `red` 状态。默认情况下，不会等待任何状态。
+    可选 `green`，`yellow` 或者 `red`。将会等待（直到设定的 timeout 时间）直到集群状态转移到给定状态或更佳，其中 `green` 状态 > `yellow` 状态 > `red` 状态。默认情况下，不会等待任何状态。
 
 `wait_for_no_relocating_shards`::
-    一个布尔值，控制请求是否等待（直到设定的timeout时间）集群到没有分片重定位。默认值为 false，代表不会等待正在重定位的分片重定位结束。
+    一个布尔值，控制请求是否等待（直到设定的 timeout 时间）集群到没有分片重定位。默认值为 false，代表不会等待正在重定位的分片重定位结束。
 
 `wait_for_no_initializing_shards`::
-    一个布尔值，控制是否等待（直到设定的timeout值）集群到没有分片初始化。默认值为 false，代表不会等待正在初始化的分片初始化结束。
+    一个布尔值，控制是否等待（直到设定的 timeout 值）集群到没有分片初始化。默认值为 false，代表不会等待正在初始化的分片初始化结束。
 
 `wait_for_active_shards`::
     一个数字，控制请求等待多少活动分片， `all` 代表等待集群中的所有分片到达活动状态，或 `0` 表示不等待。默认为 `0`。
@@ -82,7 +82,7 @@ GET /_cluster/health?wait_for_status=yellow&timeout=50s
     `lt(N)` 记号。
 
 `timeout`::
-    一个基于时间的参数，该参数控制上文提到的各个 wait_for_XXX 类型参数所用到的timeout时间。默认是为 `30s`。
+    一个基于时间的参数，该参数控制上文提到的各个 wait_for_XXX 类型参数所用到的 timeout 时间。默认是为 `30s`。
 
 `local`::
     布尔值，如果为 `true` 则返回本地节点信息而不是返回集群主节点信息。默认值为 `false`。
