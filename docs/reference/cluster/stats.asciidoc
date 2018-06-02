@@ -1,10 +1,7 @@
 [[cluster-stats]]
-== Cluster Stats
+== 集群统计
 
-The Cluster Stats API allows to retrieve statistics from a cluster wide perspective.
-The API returns basic index metrics (shard numbers, store size, memory usage) and
-information about the current nodes that form the cluster (number, roles, os, jvm
-versions, memory usage, cpu and installed plugins).
+集群统计API允许用户从集群层面获取统计数据。该API从集群中返回索引的基本属性（分片数量、存储大小、内存占用）和当前集群的节点信息（数量、作用、操作系统、jvm版本、内存占用、CPU和已经安装的插件）。
 
 [source,js]
 --------------------------------------------------
@@ -13,7 +10,7 @@ GET /_cluster/stats?human&pretty
 // CONSOLE
 // TEST[setup:twitter]
 
-Will return, for example:
+上面这个例子将会返回：
 ["source","js",subs="attributes,callouts"]
 --------------------------------------------------
 {
